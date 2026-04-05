@@ -13,6 +13,8 @@ import Foundation
 import CoreMotion
 import UserNotifications
 import ActivityKit
+import Observation
+import HealthKit
 
 // MARK: - 状态机枚举
 enum SkiState: String, Equatable {
@@ -23,7 +25,7 @@ enum SkiState: String, Equatable {
     var systemIcon: String {
         switch self {
         case .idle:              return "snowflake"
-        case .skiingAndQueueing: return "figure.skiing.downhill"
+        case .skiingAndQueueing: return "figure.snowboarding"
         case .onLift:            return "tram.fill"
         }
     }
@@ -46,14 +48,17 @@ struct LapRecord: Identifiable {
 
 // MARK: - SkiLapTracker
 @MainActor
-final class SkiLapTracker: ObservableObject {
+@Observable
+final class SkiLapTracker: NSObject {
 
-    // MARK: Published（供 SwiftUI 视图绑定）
-    @Published private(set) var state: SkiState = .idle
-    @Published private(set) var currentAltitude: Double = 0.0   // 平滑后的相对海拔（米）
-    @Published private(set) var lapRecords: [LapRecord] = []
-    @Published private(set) var isTracking: Bool = false
-    @Published private(set) var statusMessage: String = "按下开始按钮开始记录"
+    // MARK: 可观测属性（供 SwiftUI 视图绑定，使用 @Observable 宏，无需 Combine）
+    private(set) var state: SkiState = .idle
+    private(set) var currentAltitude: Double = 0.0   // 平滑后的相对海拔（米，内部算法用）
+    /// 气压海拔（米）：由实时气压值通过国际标准大气公式换算，用于界面显示
+    private(set) var pressureAltitude: Double = 0.0
+    private(set) var lapRecords: [LapRecord] = []
+    private(set) var isTracking: Bool = false
+    private(set) var statusMessage: String = "按下开始按钮开始记录"
 
     // MARK: 核心状态变量
     /// 当前循环中追踪到的局部最低海拔（谷底）
@@ -70,6 +75,14 @@ final class SkiLapTracker: ObservableObject {
 
     // MARK: 气压计
     private let altimeter = CMAltimeter()
+    /// 专用后台队列：确保锁屏后气压计回调不受主线程挂起影响
+    private let altimeterQueue: OperationQueue = {
+        let q = OperationQueue()
+        q.name = "com.skilap.altimeter"
+        q.qualityOfService = .userInitiated
+        q.maxConcurrentOperationCount = 1
+        return q
+    }()
     /// 启动时记录的基准海拔（用于将绝对值转为相对值）
     private var baselineAltitude: Double? = nil
     /// EMA 平滑系数（0~1）：越小越平滑，越大越灵敏
@@ -93,6 +106,12 @@ final class SkiLapTracker: ObservableObject {
     // MARK: Live Activity
     private var liveActivity: Activity<SkiLapActivityAttributes>? = nil
 
+
+    // MARK: HealthKit 后台保活
+    private let healthStore = HKHealthStore()
+    /// HKWorkoutSession（iOS 17+）：开启后系统赋予最高后台优先级，确保气压计锁屏持续运行
+    private var workoutSession: HKWorkoutSession?
+
     // MARK: - 启动追踪
     func startTracking() async {
         guard CMAltimeter.isRelativeAltitudeAvailable() else {
@@ -109,12 +128,16 @@ final class SkiLapTracker: ObservableObject {
         state = .skiingAndQueueing
         statusMessage = "正在追踪，等待首次下坡..."
 
+        // 启动 HealthKit 体能训练会话（后台保活：锁屏后气压计持续运行）
+        await startWorkoutSession()
+
         // 启动实时活动（锁屏显示 + 灵动岛）
         await startLiveActivity()
 
-        // 订阅气压计：每次有新数据时回调
-        altimeter.startRelativeAltitudeUpdates(to: .main) { [weak self] data, error in
+        // 订阅气压计：在专用后台队列接收数据（锁屏后主线程会被挂起，后台队列不会）
+        altimeter.startRelativeAltitudeUpdates(to: altimeterQueue) { [weak self] data, error in
             guard let data = data, error == nil else { return }
+            // 后台队列收到数据后，切回 MainActor 驱动状态机和 UI 更新
             Task { @MainActor [weak self] in
                 self?.processAltimeterData(data)
             }
@@ -129,6 +152,8 @@ final class SkiLapTracker: ObservableObject {
         isTracking = false
         state = .idle
         statusMessage = "追踪已停止，共完成 \(lapRecords.count) 圈"
+        // 结束体能训练会话（不保存任何健康数据）
+        stopWorkoutSession()
         await endLiveActivity()
     }
 
@@ -148,6 +173,12 @@ final class SkiLapTracker: ObservableObject {
     private func processAltimeterData(_ data: CMAltitudeData) {
         let rawRelative = data.relativeAltitude.doubleValue
 
+        // 由实时气压（kPa）换算气压海拔（米）
+        // 国际标准大气公式：h = 44330 × (1 - (P/P₀)^(1/5.255))
+        // P₀ = 1013.25 hPa = 101.325 kPa（标准海平面气压）
+        let pressureKPa = data.pressure.doubleValue
+        pressureAltitude = 44330.0 * (1.0 - pow(pressureKPa / 101.325, 1.0 / 5.255))
+
         // 首次读取：设定基准，初始化所有谷底记录
         if baselineAltitude == nil {
             baselineAltitude = rawRelative
@@ -157,7 +188,7 @@ final class SkiLapTracker: ObservableObject {
             return
         }
 
-        // 计算相对于启动时的海拔差
+        // 计算相对于启动时的海拔差（内部算法仍用相对海拔驱动状态机）
         let relative = rawRelative - (baselineAltitude ?? rawRelative)
 
         // EMA 平滑滤波：减少气压计高频噪声
@@ -221,7 +252,7 @@ final class SkiLapTracker: ObservableObject {
                 await updateLiveActivity(with: record)
             }
 
-            statusMessage = "🎿 第\(lapNum)圈完成：\(record.formattedDuration)"
+            statusMessage = "第\(lapNum)圈：\(record.formattedDuration)"
         }
 
         // 【关键更新】将本次谷底时间记为下一圈的起点
@@ -290,6 +321,52 @@ final class SkiLapTracker: ObservableObject {
         Task { await updateLiveActivityState("滑行中 🎿") }
     }
 
+    // MARK: - HealthKit 体能训练会话（后台保活核心）
+
+    /// 开启滑雪体能训练会话。
+    /// iOS 17+ 中，活跃的 HKWorkoutSession 可让 App 在锁屏后持续在后台运行，
+    /// 等同于 Apple Watch 的 Workout 后台权限，是保证气压计数据不中断的最可靠手段。
+    private func startWorkoutSession() async {
+        guard #available(iOS 17.0, *),
+              HKHealthStore.isHealthDataAvailable() else {
+            print("⚠️ HKWorkoutSession 不可用（需 iOS 17+ 且设备支持 HealthKit）")
+            return
+        }
+
+        // 申请 HealthKit 写权限（仅用于开启会话，不实际写入数据）
+        let workoutType = HKQuantityType.workoutType()
+        do {
+            try await healthStore.requestAuthorization(toShare: [workoutType], read: [])
+        } catch {
+            print("⚠️ HealthKit 授权失败: \(error)")
+            return
+        }
+
+        // 配置：单板滑雪户外运动
+        let config = HKWorkoutConfiguration()
+        config.activityType = .snowboarding
+        config.locationType = .outdoor
+
+        do {
+            let session = try HKWorkoutSession(healthStore: healthStore, configuration: config)
+            session.delegate = self
+            workoutSession = session
+            session.startActivity(with: .now)
+            print("✅ 体能训练会话已启动，锁屏后气压计将持续运行")
+        } catch {
+            print("❌ 体能训练会话启动失败: \(error)")
+        }
+    }
+
+    /// 结束会话，不调用 finishWorkout()，因此不向「健康」App 写入任何记录。
+    private func stopWorkoutSession() {
+        guard #available(iOS 17.0, *) else { return }
+        workoutSession?.stopActivity(with: .now)
+        workoutSession?.end()
+        workoutSession = nil
+        print("✅ 体能训练会话已结束（未写入健康数据）")
+    }
+
     // MARK: - 本地通知
     private func requestNotificationPermission() async {
         do {
@@ -303,8 +380,8 @@ final class SkiLapTracker: ObservableObject {
 
     private func sendLapNotification(record: LapRecord) async {
         let content = UNMutableNotificationContent()
-        content.title = "🎿 计圈成功"
-        content.body = "第\(record.lapNumber)圈时: \(record.formattedDuration)"
+        content.title = ""
+        content.body = "第\(record.lapNumber)圈：\(record.formattedDuration)"
         content.sound = .default
         content.interruptionLevel = .timeSensitive  // 计时敏感，确保通知弹出
 
@@ -331,8 +408,7 @@ final class SkiLapTracker: ObservableObject {
         let initialState = SkiLapActivityAttributes.ContentState(
             lapCount: 0,
             lastLapTime: nil,
-            skiStateText: "滑行中 🎿",
-            altitude: 0.0
+            skiStateText: "滑行中 🎿"
         )
 
         do {
@@ -351,8 +427,7 @@ final class SkiLapTracker: ObservableObject {
         let newState = SkiLapActivityAttributes.ContentState(
             lapCount: record.lapNumber,
             lastLapTime: record.formattedDuration,
-            skiStateText: "乘缆车中 🚡",
-            altitude: currentAltitude
+            skiStateText: "乘缆车中 🚡"
         )
         await liveActivity?.update(.init(state: newState, staleDate: nil))
     }
@@ -361,8 +436,7 @@ final class SkiLapTracker: ObservableObject {
         let newState = SkiLapActivityAttributes.ContentState(
             lapCount: lapRecords.count,
             lastLapTime: lapRecords.last?.formattedDuration,
-            skiStateText: stateText,
-            altitude: currentAltitude
+            skiStateText: stateText
         )
         await liveActivity?.update(.init(state: newState, staleDate: nil))
     }
@@ -371,13 +445,33 @@ final class SkiLapTracker: ObservableObject {
         let finalState = SkiLapActivityAttributes.ContentState(
             lapCount: lapRecords.count,
             lastLapTime: lapRecords.last?.formattedDuration,
-            skiStateText: "追踪已结束",
-            altitude: currentAltitude
+            skiStateText: "追踪已结束"
         )
         await liveActivity?.end(
             .init(state: finalState, staleDate: nil),
             dismissalPolicy: .default
         )
         liveActivity = nil
+    }
+}
+
+// MARK: - HKWorkoutSessionDelegate
+extension SkiLapTracker: HKWorkoutSessionDelegate {
+    /// 会话状态变化回调（running / stopped / ended 等）
+    nonisolated func workoutSession(
+        _ workoutSession: HKWorkoutSession,
+        didChangeTo toState: HKWorkoutSessionState,
+        from fromState: HKWorkoutSessionState,
+        date: Date
+    ) {
+        print("体能训练会话状态: \(fromState.rawValue) → \(toState.rawValue)")
+    }
+
+    /// 会话发生错误时回调
+    nonisolated func workoutSession(
+        _ workoutSession: HKWorkoutSession,
+        didFailWithError error: Error
+    ) {
+        print("体能训练会话错误: \(error.localizedDescription)")
     }
 }

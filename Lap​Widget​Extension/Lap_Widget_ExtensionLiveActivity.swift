@@ -12,17 +12,8 @@ import ActivityKit
 import WidgetKit
 import SwiftUI
 
-// MARK: - ActivityAttributes（与主 App 的 SkiLapActivityAttributes.swift 保持完全一致）
-struct SkiLapActivityAttributes: ActivityAttributes {
-    struct ContentState: Codable, Hashable {
-        var lapCount: Int
-        var lastLapTime: String?
-        var skiStateText: String
-        var altitude: Double
-    }
-}
-
 // MARK: - Live Activity Widget 主体
+// SkiLapActivityAttributes 已由共享文件 SkiLapActivityAttributes.swift 提供（已加入两个 Target）
 struct Lap_Widget_ExtensionLiveActivity: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: SkiLapActivityAttributes.self) { context in
@@ -46,17 +37,12 @@ struct Lap_Widget_ExtensionLiveActivity: Widget {
                     .foregroundColor(.white.opacity(0.9))
                 }
 
-                // 展开：Trailing（圈数 + 海拔）
+                // 展开：Trailing（圈数）
                 DynamicIslandExpandedRegion(.trailing) {
-                    VStack(alignment: .trailing, spacing: 2) {
-                        Text("第\(context.state.lapCount)圈")
-                            .font(.headline)
-                            .fontWeight(.bold)
-                            .foregroundColor(.yellow)
-                        Text(String(format: "%+.0f m", context.state.altitude))
-                            .font(.caption2)
-                            .foregroundColor(.white.opacity(0.6))
-                    }
+                    Text("第\(context.state.lapCount)圈")
+                        .font(.headline)
+                        .fontWeight(.bold)
+                        .foregroundColor(.yellow)
                 }
 
                 // 展开：Bottom（上圈时间）
@@ -77,17 +63,31 @@ struct Lap_Widget_ExtensionLiveActivity: Widget {
                 }
 
             } compactLeading: {
-                Image(systemName: stateIcon(for: context.state.skiStateText))
-                    .foregroundColor(.cyan)
+                // 左側：圈数
+                Text("第\(context.state.lapCount)圈")
+                    .font(.caption2.bold())
+                    .foregroundColor(.white.opacity(0.8))
 
             } compactTrailing: {
-                Text("·\(context.state.lapCount)")
-                    .font(.caption2.bold())
-                    .foregroundColor(.yellow)
+                // 右側：上一圈时间
+                if let last = context.state.lastLapTime {
+                    Text(last)
+                        .font(.system(size: 12, weight: .semibold, design: .rounded))
+                        .foregroundColor(.yellow)
+                        .monospacedDigit()
+                        .minimumScaleFactor(0.7)
+                        .lineLimit(1)
+                } else {
+                    Text("--分--秒")
+                        .font(.caption2)
+                        .foregroundColor(.white.opacity(0.4))
+                }
 
             } minimal: {
-                Image(systemName: "figure.skiing.downhill")
-                    .foregroundColor(.cyan)
+                // 仅显示圈数数字
+                Text("\(context.state.lapCount)")
+                    .font(.caption2.bold())
+                    .foregroundColor(.yellow)
             }
             .widgetURL(URL(string: "skilap://open"))
             .keylineTint(.cyan)
@@ -96,7 +96,7 @@ struct Lap_Widget_ExtensionLiveActivity: Widget {
 
     private func stateIcon(for text: String) -> String {
         if text.contains("缆车") { return "tram.fill" }
-        if text.contains("滑行") { return "figure.skiing.downhill" }
+        if text.contains("滑行") { return "figure.snowboarding" }
         return "snowflake"
     }
 }
@@ -118,9 +118,7 @@ struct SkiLapLockScreenView: View {
                         .font(.subheadline)
                         .foregroundColor(.white.opacity(0.85))
                 }
-                Text(String(format: "相对海拔 %+.0f 米", state.altitude))
-                    .font(.caption2)
-                    .foregroundColor(.white.opacity(0.5))
+
             }
 
             Spacer()
@@ -151,7 +149,7 @@ struct SkiLapLockScreenView: View {
 
     private var stateIcon: String {
         if state.skiStateText.contains("缆车") { return "tram.fill" }
-        if state.skiStateText.contains("滑行") { return "figure.skiing.downhill" }
+        if state.skiStateText.contains("滑行") { return "figure.snowboarding" }
         return "snowflake"
     }
 
@@ -171,10 +169,10 @@ extension SkiLapActivityAttributes {
 
 extension SkiLapActivityAttributes.ContentState {
     fileprivate static var skiing: SkiLapActivityAttributes.ContentState {
-        .init(lapCount: 3, lastLapTime: "8分22秒", skiStateText: "滑行中 🎿", altitude: -120.5)
+        .init(lapCount: 3, lastLapTime: "8分22秒", skiStateText: "滑行中 🎿")
     }
     fileprivate static var onLift: SkiLapActivityAttributes.ContentState {
-        .init(lapCount: 3, lastLapTime: "8分22秒", skiStateText: "乘缆车中 🚡", altitude: 45.2)
+        .init(lapCount: 3, lastLapTime: "8分22秒", skiStateText: "乘缆车中 🚡")
     }
 }
 

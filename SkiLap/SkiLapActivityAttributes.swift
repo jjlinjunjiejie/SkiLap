@@ -20,8 +20,6 @@ struct SkiLapActivityAttributes: ActivityAttributes {
         var lastLapTime: String?
         /// 当前状态文字：滑行中 / 乘缆车中 / 已结束
         var skiStateText: String
-        /// 当前相对海拔（米，以追踪开始点为基准）
-        var altitude: Double
     }
 
     // 无需静态属性（会话启动时所有数据均通过 ContentState 传递）

@@ -71,7 +71,7 @@ struct StateCardView: View {
                     Image(systemName: "mountain.2.fill")
                         .font(.caption2)
                         .foregroundColor(.secondary)
-                    Text(String(format: "海拔 %+.1f 米", tracker.currentAltitude))
+                    Text(String(format: "气压海拔 %.0f 米", tracker.pressureAltitude))
                         .font(.caption)
                         .foregroundColor(.secondary)
                         .monospacedDigit()

@@ -2,15 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSSupportsLiveActivities</key>
-	<true/>
-	<key>NSHealthShareUsageDescription</key>
-	<string>SkiLap 开启滑雪体能训练会话，以在锁屏时保持气压计持续运行，准确计算滑雪圈数。停止后不写入任何健康数据。</string>
-	<key>NSHealthUpdateUsageDescription</key>
-	<string>SkiLap 开启滑雪体能训练会话，以在锁屏时保持气压计持续运行，准确计算滑雪圈数。停止后不写入任何健康数据。</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>workout-processing</string>
+		<string>location</string>
 	</array>
 </dict>
 </plist>

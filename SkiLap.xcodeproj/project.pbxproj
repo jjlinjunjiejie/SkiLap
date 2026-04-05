@@ -6,14 +6,83 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		7E96482F2F813FED0065FCEA /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E96482E2F813FED0065FCEA /* WidgetKit.framework */; };
+		7E9648312F813FED0065FCEA /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E9648302F813FED0065FCEA /* SwiftUI.framework */; };
+		7E9648402F813FEE0065FCEA /* Lap​Widget​ExtensionExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 7E96482C2F813FED0065FCEA /* Lap​Widget​ExtensionExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		7E96483E2F813FEE0065FCEA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7E96480C2F813D8E0065FCEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7E96482B2F813FED0065FCEA;
+			remoteInfo = "Lap​Widget​ExtensionExtension";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		7E9648452F813FEE0065FCEA /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				7E9648402F813FEE0065FCEA /* Lap​Widget​ExtensionExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		7E9648142F813D8E0065FCEA /* SkiLap.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SkiLap.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		7E96482C2F813FED0065FCEA /* Lap​Widget​ExtensionExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Lap​Widget​ExtensionExtension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		7E96482E2F813FED0065FCEA /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		7E9648302F813FED0065FCEA /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		7E9648412F813FEE0065FCEA /* Exceptions for "Lap​Widget​Extension" folder in "Lap​Widget​ExtensionExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 7E96482B2F813FED0065FCEA /* Lap​Widget​ExtensionExtension */;
+		};
+		7E9648492F8140630065FCEA /* Exceptions for "SkiLap" folder in "Lap​Widget​ExtensionExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				SkiLapActivityAttributes.swift,
+			);
+			target = 7E96482B2F813FED0065FCEA /* Lap​Widget​ExtensionExtension */;
+		};
+		7E96484B2F81407C0065FCEA /* Exceptions for "SkiLap" folder in "SkiLap" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 7E9648132F813D8E0065FCEA /* SkiLap */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		7E9648162F813D8E0065FCEA /* SkiLap */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				7E96484B2F81407C0065FCEA /* Exceptions for "SkiLap" folder in "SkiLap" target */,
+				7E9648492F8140630065FCEA /* Exceptions for "SkiLap" folder in "Lap​Widget​ExtensionExtension" target */,
+			);
 			path = SkiLap;
+			sourceTree = "<group>";
+		};
+		7E9648322F813FED0065FCEA /* Lap​Widget​Extension */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				7E9648412F813FEE0065FCEA /* Exceptions for "Lap​Widget​Extension" folder in "Lap​Widget​ExtensionExtension" target */,
+			);
+			path = "Lap​Widget​Extension";
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -26,6 +95,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		7E9648292F813FED0065FCEA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7E9648312F813FED0065FCEA /* SwiftUI.framework in Frameworks */,
+				7E96482F2F813FED0065FCEA /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -33,6 +111,8 @@
 			isa = PBXGroup;
 			children = (
 				7E9648162F813D8E0065FCEA /* SkiLap */,
+				7E9648322F813FED0065FCEA /* Lap​Widget​Extension */,
+				7E96482D2F813FED0065FCEA /* Frameworks */,
 				7E9648152F813D8E0065FCEA /* Products */,
 			);
 			sourceTree = "<group>";
@@ -41,8 +121,18 @@
 			isa = PBXGroup;
 			children = (
 				7E9648142F813D8E0065FCEA /* SkiLap.app */,
+				7E96482C2F813FED0065FCEA /* Lap​Widget​ExtensionExtension.appex */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		7E96482D2F813FED0065FCEA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				7E96482E2F813FED0065FCEA /* WidgetKit.framework */,
+				7E9648302F813FED0065FCEA /* SwiftUI.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -55,10 +145,12 @@
 				7E9648102F813D8E0065FCEA /* Sources */,
 				7E9648112F813D8E0065FCEA /* Frameworks */,
 				7E9648122F813D8E0065FCEA /* Resources */,
+				7E9648452F813FEE0065FCEA /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				7E96483F2F813FEE0065FCEA /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				7E9648162F813D8E0065FCEA /* SkiLap */,
@@ -69,6 +161,28 @@
 			productName = SkiLap;
 			productReference = 7E9648142F813D8E0065FCEA /* SkiLap.app */;
 			productType = "com.apple.product-type.application";
+		};
+		7E96482B2F813FED0065FCEA /* Lap​Widget​ExtensionExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7E9648422F813FEE0065FCEA /* Build configuration list for PBXNativeTarget "Lap​Widget​ExtensionExtension" */;
+			buildPhases = (
+				7E9648282F813FED0065FCEA /* Sources */,
+				7E9648292F813FED0065FCEA /* Frameworks */,
+				7E96482A2F813FED0065FCEA /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				7E9648322F813FED0065FCEA /* Lap​Widget​Extension */,
+			);
+			name = "Lap​Widget​ExtensionExtension";
+			packageProductDependencies = (
+			);
+			productName = "Lap​Widget​ExtensionExtension";
+			productReference = 7E96482C2F813FED0065FCEA /* Lap​Widget​ExtensionExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -81,6 +195,9 @@
 				LastUpgradeCheck = 2640;
 				TargetAttributes = {
 					7E9648132F813D8E0065FCEA = {
+						CreatedOnToolsVersion = 26.4;
+					};
+					7E96482B2F813FED0065FCEA = {
 						CreatedOnToolsVersion = 26.4;
 					};
 				};
@@ -100,12 +217,20 @@
 			projectRoot = "";
 			targets = (
 				7E9648132F813D8E0065FCEA /* SkiLap */,
+				7E96482B2F813FED0065FCEA /* Lap​Widget​ExtensionExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		7E9648122F813D8E0065FCEA /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7E96482A2F813FED0065FCEA /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -122,7 +247,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		7E9648282F813FED0065FCEA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		7E96483F2F813FEE0065FCEA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7E96482B2F813FED0065FCEA /* Lap​Widget​ExtensionExtension */;
+			targetProxy = 7E96483E2F813FEE0065FCEA /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		7E96481D2F813D8F0065FCEA /* Debug */ = {
@@ -251,11 +391,17 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = SkiLap/SkiLap.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = PSBJYG7Y9T;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SkiLap/Info.plist;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "SkiLap 开启滑雪体能训练会话，以在锁屏时保持气压计持续运行，准确计算滑雪圈数。停止后不写入任何健康数据。";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "SkiLap 开启滑雪体能训练会话，以在锁屏时保持气压计持续运行，准确计算滑雪圈数。停止后不写入任何健康数据。";
+				INFOPLIST_KEY_NSMotionUsageDescription = "SkiLaps 需要使用您的运动与气压计数据来自动识别缆车并记录滑雪圈数。";
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -283,11 +429,17 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = SkiLap/SkiLap.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = PSBJYG7Y9T;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SkiLap/Info.plist;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "SkiLap 开启滑雪体能训练会话，以在锁屏时保持气压计持续运行，准确计算滑雪圈数。停止后不写入任何健康数据。";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "SkiLap 开启滑雪体能训练会话，以在锁屏时保持气压计持续运行，准确计算滑雪圈数。停止后不写入任何健康数据。";
+				INFOPLIST_KEY_NSMotionUsageDescription = "SkiLaps 需要使用您的运动与气压计数据来自动识别缆车并记录滑雪圈数。";
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -303,6 +455,66 @@
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		7E9648432F813FEE0065FCEA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = PSBJYG7Y9T;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Lap​Widget​Extension/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Lap​Widget​Extension";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "bowen.SkiLap.Lap-Widget-Extension";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		7E9648442F813FEE0065FCEA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = PSBJYG7Y9T;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Lap​Widget​Extension/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Lap​Widget​Extension";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "bowen.SkiLap.Lap-Widget-Extension";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
@@ -327,6 +539,15 @@
 			buildConfigurations = (
 				7E9648202F813D8F0065FCEA /* Debug */,
 				7E9648212F813D8F0065FCEA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		7E9648422F813FEE0065FCEA /* Build configuration list for PBXNativeTarget "Lap​Widget​ExtensionExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7E9648432F813FEE0065FCEA /* Debug */,
+				7E9648442F813FEE0065FCEA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
